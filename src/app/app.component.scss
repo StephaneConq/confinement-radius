@@ -1,0 +1,15 @@
+mat-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 9;
+}
+
+app-searchbar {
+  width: 95vw;
+  position: fixed;
+  top: 10px;
+  left: 2.5vw;
+  z-index: 9;
+}
