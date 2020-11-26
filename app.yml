@@ -1,0 +1,17 @@
+service: default
+runtime: nodejs12
+
+handlers:
+  - url: /favicon\.ico
+    static_files: dist/confinement-radius/favicon.ico
+    upload: dist/confinement-radius/favicon\.ico
+
+  - url: /(.*\..*$)
+    static_files: dist/confinement-radius/\1
+    upload: dist/confinement-radius/(.*\..*$)
+
+  - url: /.*
+    secure: always
+    redirect_http_response_code: 301
+    static_files: dist/confinement-radius/index.html
+    upload: dist/confinement-radius/index\.html
