@@ -1,12 +1,28 @@
 <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 <app-searchbar (searchEvent)="search($event)"></app-searchbar>
+
+<div class="radius-choice-container">
+  <mat-chip-list aria-label="Radius selection">
+    <mat-chip (click)="changedRadius(10000)" [selected]="currentRadius === 10000">10km</mat-chip>
+    <mat-chip (click)="changedRadius(20000)" [selected]="currentRadius === 20000">20km</mat-chip>
+    <mat-chip (click)="changedRadius('custom')" [selected]="currentRadius === 'custom'">Personnalisé</mat-chip>
+  </mat-chip-list>
+
+  <mat-form-field appearance="outline" *ngIf="currentRadius === 'custom'">
+    <input matInput type="number" [(ngModel)]="customRadius" (ngModelChange)="changedRadius($event, true)"/>
+    <span matSuffix>km</span>
+  </mat-form-field>
+</div>
+
 <google-map
   #googleMap
+  (mapClick)="loseFocus()"
   width="100vw"
   height="100vh"
   [options]="mapOptions"
   [center]="center"
 >
+
   <map-circle *ngIf="home" #circle [center]="home.position" [options]="circleOptions"></map-circle>
   <map-marker *ngIf="home" [options]="home.options" [position]="home.position"></map-marker>
   <map-marker *ngIf="center" [options]="myPositionMarkerOption" [position]="center"></map-marker>

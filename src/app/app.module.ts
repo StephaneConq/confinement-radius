@@ -9,6 +9,7 @@ import { GoogleMapsModule } from '@angular/google-maps'
 import {MaterialModule} from "./material/material.module";
 import { SearchbarComponent } from './components/searchbar/searchbar.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {HttpClientJsonpModule, HttpClientModule} from "@angular/common/http";
 
 
 @NgModule({
@@ -23,7 +24,9 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     GoogleMapsModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule,
+    HttpClientJsonpModule
   ],
   providers: [],
   bootstrap: [AppComponent]

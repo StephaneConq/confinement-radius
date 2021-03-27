@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  mapsApiKey: 'AIzaSyBMARcCje2bszHENSrLOZ_SY_IsQJYihY4'
 };

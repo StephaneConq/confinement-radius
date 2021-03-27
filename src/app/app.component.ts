@@ -1,6 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {LoadingService} from "./services/loading.service";
+import {GeolocationService} from "./services/geolocation.service";
 
 @Component({
   selector: 'app-root',
@@ -11,8 +12,13 @@ export class AppComponent implements OnInit {
 
   constructor(private snackBar: MatSnackBar,
               private changeDetection: ChangeDetectorRef,
+              private geolocationService: GeolocationService,
               private loadingService: LoadingService) {
   }
+
+  currentRadius: number | 'custom' = 10000;
+  customRadius = 10;
+  usingCustomRadius = false;
 
   center;
   home: {
@@ -26,7 +32,7 @@ export class AppComponent implements OnInit {
     streetViewControl: false
   };
   circleOptions: google.maps.CircleOptions = {
-    radius: 20000,
+    radius: 10000,
     fillColor: '#e91e63',
     fillOpacity: 0.5,
     strokeColor: '#e91e63',
@@ -44,13 +50,13 @@ export class AppComponent implements OnInit {
       this.loading = loading;
       this.changeDetection.detectChanges();
     });
-    navigator.geolocation.getCurrentPosition(position => {
-        this.center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        this.loadingService.loadingBS.next(false);
-      },
-      (err) => console.error(err),
-      {enableHighAccuracy: true}
-    );
+
+    this.geolocationService.getCurrentPosition().subscribe(res => {
+      console.log(res);
+      this.center = new google.maps.LatLng(res.location.lat, res.location.lng);
+      this.loadingService.loadingBS.next(false);
+    });
+
   }
 
   setCircle(position: { latitude: number, longitude: number }): void {
@@ -74,6 +80,43 @@ export class AppComponent implements OnInit {
     }
     const chosen = event[0];
     this.setCircle({latitude: chosen.geometry.location.lat(), longitude: chosen.geometry.location.lng()});
+    this.fitBoundsToCircle();
+  }
+
+  changedRadius(radius: number | 'custom', isFromCustom=false): void {
+    if (!radius) {
+      return;
+    }
+    if (radius === 'custom') {
+      this.currentRadius = radius;
+      this.circleOptions.radius = this.customRadius * 1000;
+    } else {
+      if (isFromCustom) {
+        this.circleOptions.radius = this.customRadius * 1000;
+      } else {
+        this.currentRadius = radius;
+        this.circleOptions.radius = parseInt(radius.toString());
+      }
+    }
+
+    if (!this.home) {
+      return;
+    }
+    const copyHome = JSON.parse(JSON.stringify(this.home));
+    this.home = null;
+    setTimeout(() => {
+      this.home = copyHome;
+      this.fitBoundsToCircle();
+    });
+  }
+
+  fitBoundsToCircle(): void {
+    const circle = new google.maps.Circle({radius: this.circleOptions.radius, center: this.home.position});
+    this.map.fitBounds(circle.getBounds());
+  }
+
+  loseFocus(): void {
+    document.getElementById("search-input").blur();
   }
 
 }
